@@ -1,38 +1,32 @@
 "use strict";
-const CACHE = "plant-zombie-game-2026-08-23-v1";
-const CORE = [
-  "./",
-  "./index.html",
-  "./manifest.webmanifest",
-  "./icons/icon-180.png",
-  "./icons/icon-192.png",
-  "./icons/icon-512.png"
+const CACHE="plant-zombie-hub-2026-08-23-v3";
+const CORE=[
+  "./","./index.html","./manifest.webmanifest",
+  "./icons/icon-180.png","./icons/icon-192.png","./icons/icon-512.png",
+  "./games/zombie-vs-plant/index.html",
+  "./games/plant-vs-zombie/index.html",
+  "./games/plant-vs-plant/index.html",
+  "./games/zombie-vs-zombie/index.html"
 ];
-self.addEventListener("install", event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(CORE)).then(() => self.skipWaiting()));
+self.addEventListener("install",event=>{
+  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));
 });
-self.addEventListener("activate", event => {
-  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+self.addEventListener("activate",event=>{
+  event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
 });
-self.addEventListener("fetch", event => {
-  if (event.request.method !== "GET") return;
-  if (event.request.mode === "navigate") {
+self.addEventListener("fetch",event=>{
+  if(event.request.method!=="GET")return;
+  if(event.request.mode==="navigate"){
     event.respondWith(
-      fetch(event.request, {cache:"no-store"})
-        .then(response => {
-          const copy = response.clone();
-          caches.open(CACHE).then(cache => cache.put("./index.html", copy));
-          return response;
-        })
-        .catch(() => caches.match("./index.html"))
+      fetch(event.request,{cache:"no-store"}).then(response=>{
+        if(response&&response.ok){const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy));}
+        return response;
+      }).catch(()=>caches.match(event.request).then(cached=>cached||caches.match("./index.html")))
     );
     return;
   }
-  event.respondWith(
-    caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
-      const copy = response.clone();
-      caches.open(CACHE).then(cache => cache.put(event.request, copy));
-      return response;
-    }))
-  );
+  event.respondWith(caches.match(event.request).then(cached=>cached||fetch(event.request).then(response=>{
+    if(response&&response.ok){const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy));}
+    return response;
+  })));
 });
