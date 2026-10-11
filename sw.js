@@ -1,5 +1,5 @@
 "use strict";
-const CACHE="plant-zombie-hub-2026-10-11-v4";
+const CACHE="plant-zombie-hub-2026-10-11-v5";
 const CORE=[
   "./","./index.html","./manifest.webmanifest",
   "./icons/icon-180.png","./icons/icon-192.png","./icons/icon-512.png",
